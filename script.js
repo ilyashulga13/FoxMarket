@@ -217,20 +217,32 @@ async function hashPassword(password) {
   return btoa(String.fromCharCode(...new Uint8Array(hash)));
 }
 
-async function loadData() {
+function loadUsers() {
+  try {
+    return JSON.parse(localStorage.getItem("foxmarket_users") || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveUsers(users) {
+  localStorage.setItem("foxmarket_users", JSON.stringify(users));
+}
+
+async function loadReviews() {
   try {
     const response = await fetch(`https://api.github.com/gists/${GIST_ID}`);
     const data = await response.json();
     const content = JSON.parse(data.files["db.json"].content);
-    return content;
+    return content.reviews || [];
   } catch (error) {
-    return { users: [], reviews: [] };
+    return [];
   }
 }
 
-async function saveData(users, reviews) {
-  const data = { users, reviews };
+async function saveReviews(reviews) {
   try {
+    const data = { reviews };
     await fetch(`https://api.github.com/gists/${GIST_ID}`, {
       method: "PATCH",
       headers: {
@@ -246,7 +258,7 @@ async function saveData(users, reviews) {
       }),
     });
   } catch (error) {
-    console.error("Ошибка сохранения данных:", error);
+    console.error("Ошибка сохранения отзывов:", error);
   }
 }
 
@@ -421,15 +433,16 @@ function updateCartQuantity(productId, change) {
 }
 
 async function getAverageRating(productId) {
-  const reviews = await getProductReviews(productId);
-  if (reviews.length === 0) return 0;
-  const sum = reviews.reduce((total, r) => total + r.rating, 0);
-  return sum / reviews.length;
+  const reviews = await loadReviews();
+  const productReviews = reviews.filter((r) => r.productId === productId);
+  if (productReviews.length === 0) return 0;
+  const sum = productReviews.reduce((total, r) => total + r.rating, 0);
+  return sum / productReviews.length;
 }
 
 async function getProductReviews(productId) {
-  const db = await loadData();
-  return db.reviews.filter((r) => r.productId === productId);
+  const reviews = await loadReviews();
+  return reviews.filter((r) => r.productId === productId);
 }
 
 async function openProduct(productId) {
@@ -552,9 +565,9 @@ async function addReview(productId) {
   }
 
   try {
-    const db = await loadData();
+    const reviews = await loadReviews();
 
-    db.reviews.push({
+    reviews.push({
       id: Date.now(),
       productId: productId,
       name: currentUser.name,
@@ -563,7 +576,7 @@ async function addReview(productId) {
       date: new Date().toLocaleDateString("ru-RU"),
     });
 
-    await saveData(db.users, db.reviews);
+    await saveReviews(reviews);
 
     document.getElementById("reviewRating").value = "";
     document.getElementById("reviewText").value = "";
@@ -933,36 +946,31 @@ async function register() {
     return;
   }
 
-  try {
-    const db = await loadData();
+  const users = loadUsers();
 
-    if (db.users.find((u) => u.email === email)) {
-      showNotification("Пользователь с таким email уже существует!", "error");
-      return;
-    }
-
-    const hashedPassword = await hashPassword(password);
-
-    db.users.push({
-      id: Date.now(),
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    await saveData(db.users, db.reviews);
-
-    showNotification("Регистрация успешна! Теперь войдите.", "success");
-    switchAuthForm("login");
-
-    document.getElementById("registerName").value = "";
-    document.getElementById("registerEmail").value = "";
-    document.getElementById("registerPassword").value = "";
-    document.getElementById("registerConfirm").value = "";
-  } catch (error) {
-    console.error("Ошибка регистрации:", error);
-    showNotification("Ошибка соединения с сервером!", "error");
+  if (users.find((u) => u.email === email)) {
+    showNotification("Пользователь с таким email уже существует!", "error");
+    return;
   }
+
+  const hashedPassword = await hashPassword(password);
+
+  users.push({
+    id: Date.now(),
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  saveUsers(users);
+
+  showNotification("Регистрация успешна! Теперь войдите.", "success");
+  switchAuthForm("login");
+
+  document.getElementById("registerName").value = "";
+  document.getElementById("registerEmail").value = "";
+  document.getElementById("registerPassword").value = "";
+  document.getElementById("registerConfirm").value = "";
 }
 
 async function login() {
@@ -974,33 +982,28 @@ async function login() {
     return;
   }
 
-  try {
-    const db = await loadData();
-    const hashedPassword = await hashPassword(password);
-    const user = db.users.find(
-      (u) => u.email === email && u.password === hashedPassword,
-    );
+  const users = loadUsers();
+  const hashedPassword = await hashPassword(password);
+  const user = users.find(
+    (u) => u.email === email && u.password === hashedPassword,
+  );
 
-    if (!user) {
-      showNotification("Неверный email или пароль!", "error");
-      return;
-    }
-
-    currentUser = user;
-    localStorage.setItem("foxmarket_current_user", JSON.stringify(user));
-    showNotification(`Добро пожаловать, ${user.name}!`, "success");
-    toggleAuth();
-    updateAuthUI();
-
-    document.getElementById("loginEmail").value = "";
-    document.getElementById("loginPassword").value = "";
-
-    renderProducts();
-    renderCatalog();
-  } catch (error) {
-    console.error("Ошибка входа:", error);
-    showNotification("Ошибка соединения с сервером!", "error");
+  if (!user) {
+    showNotification("Неверный email или пароль!", "error");
+    return;
   }
+
+  currentUser = user;
+  localStorage.setItem("foxmarket_current_user", JSON.stringify(user));
+  showNotification(`Добро пожаловать, ${user.name}!`, "success");
+  toggleAuth();
+  updateAuthUI();
+
+  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginPassword").value = "";
+
+  renderProducts();
+  renderCatalog();
 }
 
 function logout() {
@@ -1027,8 +1030,14 @@ function checkSavedUser() {
   if (saved) {
     try {
       const user = JSON.parse(saved);
-      currentUser = user;
-      updateAuthUI();
+      const users = loadUsers();
+      const exists = users.some((u) => u.email === user.email);
+      if (exists) {
+        currentUser = user;
+        updateAuthUI();
+      } else {
+        localStorage.removeItem("foxmarket_current_user");
+      }
     } catch (e) {
       localStorage.removeItem("foxmarket_current_user");
     }
