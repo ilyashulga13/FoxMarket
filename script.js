@@ -225,10 +225,15 @@ function saveUsers(users) {
 async function loadReviews() {
   try {
     const response = await fetch(`https://api.github.com/gists/${GIST_ID}`);
+    if (!response.ok) {
+      console.error("Ошибка загрузки отзывов:", response.status);
+      return [];
+    }
     const data = await response.json();
     const content = JSON.parse(data.files["db.json"].content);
     return content.reviews || [];
   } catch (error) {
+    console.error("Ошибка загрузки отзывов:", error);
     return [];
   }
 }
@@ -236,7 +241,7 @@ async function loadReviews() {
 async function saveReviews(reviews) {
   try {
     const data = { reviews };
-    await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
       method: "PATCH",
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
@@ -250,8 +255,21 @@ async function saveReviews(reviews) {
         },
       }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Ошибка GitHub API:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+      });
+      throw new Error(`Ошибка GitHub: ${response.status}`);
+    }
+
+    return await response.json();
   } catch (error) {
     console.error("Ошибка сохранения отзывов:", error);
+    throw error;
   }
 }
 
