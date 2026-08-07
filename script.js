@@ -1,5 +1,5 @@
 const GIST_ID = "d140f46b8d107ec73a1464221b7b21ba";
-const GITHUB_TOKEN = "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";
+const GITHUB_TOKEN = "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";
 
 const productsData = [
   {
