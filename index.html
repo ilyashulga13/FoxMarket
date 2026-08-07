@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoxMarket - Магазин клавиатур</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-container">
+        <div class="logo">
+          <i class="fas fa-fox logo-icon"></i>
+          <span class="logo-text">FoxMarket</span>
+        </div>
+        <nav class="nav">
+          <a href="#" class="nav-link active" data-page="home"
+            ><i class="fas fa-home"></i> Главная</a
+          >
+          <a href="#" class="nav-link" data-page="catalog"
+            ><i class="fas fa-th-list"></i> Каталог</a
+          >
+          <a href="#" class="nav-link" data-page="about"
+            ><i class="fas fa-info-circle"></i> О нас</a
+          >
+          <a href="#" class="nav-link" data-page="contacts"
+            ><i class="fas fa-envelope"></i> Контакты</a
+          >
+        </nav>
+        <div class="header-actions">
+          <button class="header-btn" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cartCount" class="cart-badge">0</span>
+          </button>
+          <button class="header-btn" onclick="toggleAuth()" id="authBtn">
+            <i class="fas fa-user"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <aside class="aside" id="aside">
+          <div class="aside-section">
+            <h3 class="aside-title">
+              <i class="fas fa-folder-open"></i> Категории
+            </h3>
+            <ul class="aside-list">
+              <li>
+                <a href="#" class="aside-link active" data-category="all"
+                  ><i class="fas fa-th-large"></i> Все</a
+                >
+              </li>
+              <li>
+                <a href="#" class="aside-link" data-category="keyboard"
+                  ><i class="fas fa-keyboard"></i> Клавиатуры</a
+                >
+              </li>
+              <li>
+                <a href="#" class="aside-link" data-category="mouse"
+                  ><i class="fas fa-mouse"></i> Мыши</a
+                >
+              </li>
+              <li>
+                <a href="#" class="aside-link" data-category="headphones"
+                  ><i class="fas fa-headphones"></i> Наушники</a
+                >
+              </li>
+              <li>
+                <a href="#" class="aside-link" data-category="monitor"
+                  ><i class="fas fa-desktop"></i> Мониторы</a
+                >
+              </li>
+              <li>
+                <a href="#" class="aside-link" data-category="console"
+                  ><i class="fas fa-gamepad"></i> Консоли</a
+                >
+              </li>
+              <li>
+                <a href="#" class="aside-link" data-category="phone"
+                  ><i class="fas fa-mobile-alt"></i> Смартфоны</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="aside-section">
+            <h3 class="aside-title">
+              <i class="fas fa-filter"></i> Фильтр по цене
+            </h3>
+            <div class="filter-group" id="priceFilters">
+              <label><input type="checkbox" value="0-50" /> До 50 BYN</label>
+              <label><input type="checkbox" value="50-200" /> 50-200 BYN</label>
+              <label
+                ><input type="checkbox" value="200-500" /> 200-500 BYN</label
+              >
+              <label
+                ><input type="checkbox" value="500-99999" /> От 500 BYN</label
+              >
+            </div>
+          </div>
+
+          <div class="aside-section">
+            <h3 class="aside-title"><i class="fas fa-star"></i> Рейтинг</h3>
+            <div class="filter-group">
+              <label
+                ><input type="checkbox" value="5" />
+                <i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i> (5)</label
+              >
+              <label
+                ><input type="checkbox" value="4" />
+                <i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="far fa-star" style="color: #ccc"></i> (4+)</label
+              >
+              <label
+                ><input type="checkbox" value="3" />
+                <i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="fas fa-star" style="color: #f5a623"></i
+                ><i class="far fa-star" style="color: #ccc"></i
+                ><i class="far fa-star" style="color: #ccc"></i> (3+)</label
+              >
+            </div>
+          </div>
+
+          <div class="aside-section">
+            <h3 class="aside-title"><i class="fas fa-tags"></i> Бренды</h3>
+            <div class="filter-group" id="brandFilters">
+              <label><input type="checkbox" value="Ajazz" /> Ajazz</label>
+              <label><input type="checkbox" value="Logitech" /> Logitech</label>
+              <label><input type="checkbox" value="Razer" /> Razer</label>
+              <label><input type="checkbox" value="Samsung" /> Samsung</label>
+              <label><input type="checkbox" value="Apple" /> Apple</label>
+
+              <div id="hiddenBrands" style="display: none">
+                <label><input type="checkbox" value="Sony" /> Sony</label>
+                <label
+                  ><input type="checkbox" value="Microsoft" /> Microsoft</label
+                >
+                <label><input type="checkbox" value="ASUS" /> ASUS</label>
+              </div>
+
+              <button class="show-more-btn" id="showMoreBrands">
+                <i class="fas fa-chevron-down"></i> Ещё
+              </button>
+            </div>
+          </div>
+
+          <div class="aside-section filter-actions">
+            <button class="filter-btn" id="applyFilters">
+              <i class="fas fa-check"></i> Применить фильтр
+            </button>
+            <button class="filter-btn reset-btn" id="resetFilters">
+              <i class="fas fa-undo"></i> Сбросить
+            </button>
+          </div>
+        </aside>
+
+        <div class="content">
+          <div class="currency-selector">
+            <label for="currency"
+              ><i class="fas fa-money-bill-wave"></i> Выберите валюту:</label
+            >
+            <select id="currency">
+              <option value="BYN">
+                <i class="fas fa-flag"></i> Белорусский рубль (BYN)
+              </option>
+              <option value="USD">
+                <i class="fas fa-dollar-sign"></i> Доллар (USD)
+              </option>
+              <option value="EUR">
+                <i class="fas fa-euro-sign"></i> Евро (EUR)
+              </option>
+              <option value="RUB">
+                <i class="fas fa-ruble-sign"></i> Российский рубль (RUB)
+              </option>
+              <option value="UAH">
+                <i class="fas fa-hryvnia"></i> Гривна (UAH)
+              </option>
+              <option value="KZT">
+                <i class="fas fa-tenge"></i> Тенге (KZT)
+              </option>
+            </select>
+            <span id="detected-flag"></span>
+          </div>
+
+          <div class="search-bar">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="🔍 Поиск товаров..."
+            />
+            <button id="searchBtn"><i class="fas fa-search"></i> Найти</button>
+          </div>
+
+          <div id="page-home" class="page-content active">
+            <div class="page-header">
+              <h1><i class="fas fa-home"></i> Добро пожаловать в FoxMarket!</h1>
+              <p>Лучший маркетплейс для геймеров и техники</p>
+            </div>
+            <div class="products" id="productsContainer"></div>
+          </div>
+
+          <div id="page-catalog" class="page-content">
+            <div class="page-header">
+              <h1><i class="fas fa-th-list"></i> Каталог товаров</h1>
+              <p>Все товары в одном месте</p>
+            </div>
+            <div class="products" id="catalogContainer"></div>
+          </div>
+
+          <div id="page-about" class="page-content">
+            <div class="page-header">
+              <h1><i class="fas fa-info-circle"></i> О нас</h1>
+            </div>
+            <div class="page-card">
+              <h2><i class="fas fa-rocket"></i> Кто мы?</h2>
+              <p>
+                FoxMarket — это современный маркетплейс, созданный для тех, кто
+                ценит качество и удобство. Мы предлагаем широкий ассортимент
+                товаров для геймеров, профессионалов и энтузиастов.
+              </p>
+
+              <h2><i class="fas fa-bullseye"></i> Наша миссия</h2>
+              <p>
+                Сделать процесс покупки техники простым, быстрым и приятным. Мы
+                отбираем только лучшие бренды и товары, чтобы вы могли быть
+                уверены в своём выборе.
+              </p>
+
+              <h2><i class="fas fa-check-circle"></i> Почему мы?</h2>
+              <ul>
+                <li>
+                  <i class="fas fa-check" style="color: #e63946"></i> Широкий
+                  ассортимент товаров
+                </li>
+                <li>
+                  <i class="fas fa-check" style="color: #e63946"></i>
+                  Конкурентные цены
+                </li>
+                <li>
+                  <i class="fas fa-check" style="color: #e63946"></i> Быстрая
+                  доставка
+                </li>
+                <li>
+                  <i class="fas fa-check" style="color: #e63946"></i> Гарантия
+                  качества
+                </li>
+                <li>
+                  <i class="fas fa-check" style="color: #e63946"></i>
+                  Круглосуточная поддержка
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="page-contacts" class="page-content">
+            <div class="page-header">
+              <h1><i class="fas fa-envelope"></i> Контакты</h1>
+            </div>
+            <div class="page-card">
+              <h2><i class="fas fa-address-card"></i> Наши контакты</h2>
+              <div class="contact-item">
+                <i
+                  class="fas fa-phone"
+                  style="color: #e63946; font-size: 20px"
+                ></i>
+                <span>+375 (33) 677-91-31</span>
+              </div>
+              <div class="contact-item">
+                <i
+                  class="fas fa-envelope"
+                  style="color: #e63946; font-size: 20px"
+                ></i>
+                <span>ilyashulga228@gmail.com</span>
+              </div>
+              <div class="contact-item">
+                <i
+                  class="fas fa-map-marker-alt"
+                  style="color: #e63946; font-size: 20px"
+                ></i>
+                <span>Минск, ул. Чекушская, 67</span>
+              </div>
+
+              <h2><i class="fas fa-clock"></i> Режим работы</h2>
+              <ul>
+                <li>
+                  <i class="fas fa-clock" style="color: #e63946"></i> Пн-Пт:
+                  09:00 - 21:00
+                </li>
+                <li>
+                  <i class="fas fa-clock" style="color: #e63946"></i> Сб-Вс:
+                  10:00 - 18:00
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="cart-modal" id="cartModal">
+      <div class="cart-content">
+        <div class="cart-header">
+          <h2><i class="fas fa-shopping-cart"></i> Корзина</h2>
+          <button class="close-cart" onclick="toggleCart()">✕</button>
+        </div>
+        <div id="cartItems">
+          <div class="empty-cart">
+            <i class="fas fa-shopping-basket"></i> Корзина пуста
+          </div>
+        </div>
+        <div class="cart-footer">
+          <div class="cart-total" id="cartTotal">
+            <i class="fas fa-calculator"></i> Итого: 0 BYN
+          </div>
+          <div class="cart-buttons">
+            <button class="clear-cart-btn" onclick="clearCart()">
+              <i class="fas fa-trash-alt"></i> Очистить
+            </button>
+            <button class="checkout-btn" onclick="checkout()">
+              <i class="fas fa-check"></i> Оформить заказ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-modal" id="authModal">
+      <div class="auth-content">
+        <div class="auth-header">
+          <h2 id="authTitle"><i class="fas fa-user"></i> Вход</h2>
+          <button class="close-auth" onclick="toggleAuth()">✕</button>
+        </div>
+        <div class="auth-body">
+          <div id="loginForm">
+            <div class="auth-input-group">
+              <label><i class="fas fa-envelope"></i> Email</label>
+              <input type="email" id="loginEmail" placeholder="Введите email" />
+            </div>
+            <div class="auth-input-group">
+              <label><i class="fas fa-lock"></i> Пароль</label>
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Введите пароль"
+              />
+            </div>
+            <button class="auth-btn" onclick="login()">
+              <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+            <p class="auth-switch">
+              Нет аккаунта?
+              <a href="#" onclick="switchAuthForm('register')"
+                >Зарегистрироваться</a
+              >
+            </p>
+          </div>
+          <div id="registerForm" style="display: none">
+            <div class="auth-input-group">
+              <label><i class="fas fa-user"></i> Имя</label>
+              <input type="text" id="registerName" placeholder="Введите имя" />
+            </div>
+            <div class="auth-input-group">
+              <label><i class="fas fa-envelope"></i> Email</label>
+              <input
+                type="email"
+                id="registerEmail"
+                placeholder="Введите email"
+              />
+            </div>
+            <div class="auth-input-group">
+              <label><i class="fas fa-lock"></i> Пароль</label>
+              <input
+                type="password"
+                id="registerPassword"
+                placeholder="Введите пароль (мин. 6 символов)"
+              />
+            </div>
+            <div class="auth-input-group">
+              <label><i class="fas fa-lock"></i> Подтвердите пароль</label>
+              <input
+                type="password"
+                id="registerConfirm"
+                placeholder="Повторите пароль"
+              />
+            </div>
+            <button class="auth-btn" onclick="register()">
+              <i class="fas fa-user-plus"></i> Зарегистрироваться
+            </button>
+            <p class="auth-switch">
+              Уже есть аккаунт?
+              <a href="#" onclick="switchAuthForm('login')">Войти</a>
+            </p>
+          </div>
+          <div id="profileInfo" style="display: none">
+            <div class="profile-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <p class="profile-name" id="profileName">Имя пользователя</p>
+            <p class="profile-email" id="profileEmail">email@example.com</p>
+            <button class="auth-btn logout-btn" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Выйти
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-modal" id="productModal">
+      <div class="product-modal-content">
+        <button class="product-modal-close" onclick="closeProduct()">✕</button>
+        <div id="productModalContent"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h4><i class="fas fa-fox"></i> FoxMarket</h4>
+          <p>Лучший маркетплейс для геймеров</p>
+          <p style="margin-top: 10px; font-size: 14px; color: #999">
+            <i class="far fa-copyright"></i> 2026 FoxMarket. Все права защищены.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4><i class="fas fa-address-book"></i> Контакты</h4>
+          <p><i class="fas fa-envelope"></i> ilyashulga228@gmail.com</p>
+          <p><i class="fas fa-phone"></i> +375 (33) 677-91-31</p>
+          <p>
+            <i class="fas fa-map-marker-alt"></i> Минск, ул. Коммунистическая,
+            42
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4><i class="fas fa-info"></i> Информация</h4>
+          <p>
+            <a href="https://github.com/ilyashulga13" class="footer-link"
+              ><i class="fas fa-chevron-right"></i> О нас</a
+            >
+          </p>
+          <p>
+            <a href="#" class="footer-link"
+              ><i class="fas fa-chevron-right"></i> Доставка</a
+            >
+          </p>
+          <p>
+            <a href="#" class="footer-link"
+              ><i class="fas fa-chevron-right"></i> Оплата</a
+            >
+          </p>
+          <p>
+            <a href="#" class="footer-link"
+              ><i class="fas fa-chevron-right"></i> Возврат</a
+            >
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4><i class="fas fa-share-alt"></i> Соцсети</h4>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="https://x.com/ilyashulga123" class="social-link"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    ></script>
+    <script type="text/javascript">
+      (function () {
+        emailjs.init({
+          publicKey: "YUwM2CkORsN0ufREQ",
+        });
+      })();
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
