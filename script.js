@@ -210,13 +210,6 @@ let currentPage = "home";
 let currentUser = null;
 let currentProductId = null;
 
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return btoa(String.fromCharCode(...new Uint8Array(hash)));
-}
-
 function loadUsers() {
   try {
     return JSON.parse(localStorage.getItem("foxmarket_users") || "[]");
@@ -925,7 +918,7 @@ function switchAuthForm(form) {
   }
 }
 
-async function register() {
+function register() {
   const name = document.getElementById("registerName").value.trim();
   const email = document.getElementById("registerEmail").value.trim();
   const password = document.getElementById("registerPassword").value;
@@ -953,13 +946,11 @@ async function register() {
     return;
   }
 
-  const hashedPassword = await hashPassword(password);
-
   users.push({
     id: Date.now(),
     name,
     email,
-    password: hashedPassword,
+    password: password,
   });
 
   saveUsers(users);
@@ -973,7 +964,7 @@ async function register() {
   document.getElementById("registerConfirm").value = "";
 }
 
-async function login() {
+function login() {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
 
@@ -983,10 +974,7 @@ async function login() {
   }
 
   const users = loadUsers();
-  const hashedPassword = await hashPassword(password);
-  const user = users.find(
-    (u) => u.email === email && u.password === hashedPassword,
-  );
+  const user = users.find((u) => u.email === email && u.password === password);
 
   if (!user) {
     showNotification("Неверный email или пароль!", "error");
